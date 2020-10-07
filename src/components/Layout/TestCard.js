@@ -4,27 +4,38 @@ import PropTypes from "prop-types";
 import {productValues} from "../../action/moviedata";
 import {connect} from 'react-redux';
 import Products from './Products';
+import axios from 'axios';
 
 export const TestCard = ({movieProfiles:{image,id,display_order,name},prodData:{productData,loading},productValues}) => {
 
-    const [product, setProduct] = useState(false);
+    const [product, setProduct] = useState([]);
     const [count, setCount] = useState(0);
     
     // useEffect(() => {
     // },[]);
-    const handleClick = (e,id) =>{
+    const handleClick = async (e,id) =>{
         e.preventDefault();
-        debugger;
-        productValues(id);
-        setProduct(true);
-        setCount(1);
-        console.log("componentsad");
-
+        try{
+      const res = await axios.get(
+          "https://testing.pogo91.com/api/online-store/category/product/?store_prefix=cake-shop&page=1",
+          {
+              params: {category_id:id}
+            }
+        );
+      //   console.log("ppppp")
+      //   console.log(res.data.products);
+         setProduct(res.data.products);
+        
+      }
+      catch(err)
+      {
+          
+      }
     }
 
     // setCount(0);
  return (
-     <Fragment>
+     <>
     <div className="grid-container-2-80">
 
       <div className="vertical-flex">
@@ -41,8 +52,7 @@ export const TestCard = ({movieProfiles:{image,id,display_order,name},prodData:{
             </div>
             
             <div className="vertical-flex">
-                {loading === false && product === true && count === 1 &&
-                  productData.map((productdata) => (
+                {loading === false && product.map((productdata) => (
                     <Products
                     key={productdata.product_id}
                     productData={productdata}
@@ -52,13 +62,17 @@ export const TestCard = ({movieProfiles:{image,id,display_order,name},prodData:{
 
                </div>
               </div>
-</Fragment>
+</>
     )
 }
 
-const mapStateToProps = state => ({
+function mapStateToProps(state){
+  debugger
+  return {
     prodData: state.moviedata
-  });
+  }
+}
+
 
 
 
